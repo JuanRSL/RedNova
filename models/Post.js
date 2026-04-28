@@ -27,6 +27,18 @@ const PostSchema = new moongose.Schema({
         type: moongose.Schema.Types.ObjectId,
         ref: 'Comment',
     }],
+    uptvotes: [{
+        type: moongose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    downtvotes: [{
+        type: moongose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    score: {
+        type: Number,
+        default: 0,
+    },
 });
 
 module.exports = moongose.model('Post', PostSchema);

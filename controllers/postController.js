@@ -35,4 +35,34 @@ exports.deletePost = async (req, res) => {
     } catch (error) { // Manejo de errores
         res.status(500).json({ message: 'Error al eliminar el post', error: error.message });
     }
+
+    // Controlador para votar un post
+    exports.votePost = async (req, res) => {
+        try {
+            // Extraer datos del cuerpo de la solicitud
+            const { postId, userId, voteType } = req.body;
+            const post = await Post.findById(postId);
+            if (!post) {
+                return res.status(404).json({ message: 'Post no encontrado' });
+            }
+            // Eliminar el voto anterior del usuario (si existe)
+            post.upvotes = post.upvotes.filter(id => id.toString() !== userId);
+            post.downvotes = post.downvotes.filter(id => id.toString() !== userId);
+
+            // Agregar el nuevo voto
+            if (voteType === 'up') {
+                post.upvotes.push(userId);
+            } else if (voteType === 'down') {
+                post.downvotes.push(userId);
+            }
+            post.score = post.upvotes.length - post.downvotes.length;
+
+            // Guardar el post actualizado
+            await post.save();
+            res.status(200).json({ message: 'Voto registrado', score: post.score });
+        } catch (error) {
+            res.status(500).json({ message: 'Error al votar el post', error: error.message });
+        }
+    };
+
 };
