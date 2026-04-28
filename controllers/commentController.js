@@ -36,4 +36,31 @@ exports.getCommentsByPost = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener comentarios' });
     }
+
+    exports.deleteComment = async (req, res) => {
+        try {
+            const { commentId, userId } = req.body;
+            const comment = await Comment.findById(commentId);
+            const user = await User.findById(userId);
+
+            if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
+            if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+            const isAuthor = comment.author.toString() === userId;
+            const isModerator = user.roles?.includes('moderator');
+            const isAdmin = user.roles?.includes('admin');
+
+            if (isAuthor || isModerator || isAdmin) {
+                await Comment.findByIdAndDelete(commentId);
+                return res.status(200).json({ message: 'Comentario eliminado exitosamente' });
+            } else {
+                return res.status(403).json({ message: 'No tienes permiso para eliminar este comentario' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Error al eliminar el comentario', error: error.message });
+        }
+    };
+};
+
+module.exports = { createComment, getCommentsByPost, deleteComment  
 };
