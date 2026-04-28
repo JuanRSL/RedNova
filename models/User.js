@@ -26,9 +26,11 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin', 'moderator'],
         default: ['user'],
     },
+    followingUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    followingSubforums: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subforum' }],
     moderatedSubforums: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subforum' }],
     moderatedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
-    moderatedComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],  
+    moderatedComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
 module.exports = mongoose.model('User', userSchema);
