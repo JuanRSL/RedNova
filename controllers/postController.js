@@ -64,5 +64,27 @@ exports.votePost = async (req, res) => {
     }
 }; 
 
+// CONTROLADOR PARA CREAR UN POST
+exports.createPost = async (req, res) => {
+    try {
+        const { title, content, author, subforum } = req.body;
+        const newPost = new Post({ title, content, author, subforum });
+        await newPost.save();
+        res.status(201).json({ message: 'Publicación creada', newPost });
+    } catch (error) {
+        res.status(400).json({ message: 'Error al crear post', error: error.message });
+    }
+};
+
+// CONTROLADOR PARA OBTENER TODOS LOS POSTS
+exports.getAllPosts = async (req, res) => {
+    try {
+        const posts = await Post.find().populate('author', 'username').sort({ createdAt: -1 });
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener posts' });
+    }
+};
+
 
 module.exports = { deletePost, votePost };
