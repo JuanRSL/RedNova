@@ -1,3 +1,7 @@
+const express = require('express'); // 1. Importar express
+const app = express();              // 2. Crear la instancia de la app
+const PORT = 3000;                  // 3. Definir el puerto
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
