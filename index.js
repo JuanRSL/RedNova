@@ -1,22 +1,20 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config(); // 1. Lee la configuración del archivo .env (Importante antes de traer los datos del archivo)
 
-const app = express();
+const express = require('express'); // 2. Importar express
+const app = express();              // 3. Crear la instancia de la app
+const PORT = process.env.PORT || 3000; // 4. Definir el puerto desde archivo .env                  
 
-// Conexión a MongoDB
-mongoose.connect(process.env.URI)
-  .then(() => console.log("¡Conexión exitosa a MongoDB Atlas!"))
-  .catch(err => console.error(" Error de conexión:", err));
-//
-const PORT = process.env.PORT || 3000;
-app.get('/', (req, res) => {
-  res.send('¡Servidor funcionando y conectado a MongoDB!');
-});
+const mongoose = require('mongoose'); // 5. Conecta con la BBDD
 
+//Conexión al Servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+//Conexión a MongoDB
+mongoose.connect(process.env.URI)
+  .then(()=> console.log("Conectado a BBDD"))
+  .catch(err => console.error("Error al conectar a BBDD", err));
 
 // ... después de los middlewares de express
 app.use(express.json()); // ¡Súper importante para recibir datos del body!
@@ -30,3 +28,4 @@ const commentRoutes = require('./routes/commentRoutes');
 app.use('/api/usuarios', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comentarios', commentRoutes);
+
