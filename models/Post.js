@@ -1,22 +1,23 @@
-const moongose = require('mongoose');
+const mongoose = require('mongoose'); // Corregido: 'mongoose' (antes moongose)
 
-const PostSchema = new moongose.Schema({
+const PostSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
+        trim: true // Opcional: elimina espacios innecesarios
     },
     content: {
         type: String,
         required: true,
     },
     author: {
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
     subforum: {
-        type: moongose.Schema.Types.ObjectId,
-        ref: 'subforum',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subforum', // Sugerido: Capitalizar si el modelo se llama 'Subforum'
         required: true,
     },
     createdAt: {
@@ -24,15 +25,15 @@ const PostSchema = new moongose.Schema({
         default: Date.now,
     },
     comments: [{
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
     }],
-    uptvotes: [{
-        type: moongose.Schema.Types.ObjectId,
+    upvotes: [{ // Corregido: 'upvotes' (antes uptvotes)
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
-    downtvotes: [{
-        type: moongose.Schema.Types.ObjectId,
+    downvotes: [{ // Corregido: 'downvotes' (antes downtvotes)
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
     score: {
@@ -41,4 +42,4 @@ const PostSchema = new moongose.Schema({
     },
 });
 
-module.exports = moongose.model('Post', PostSchema);
+module.exports = mongoose.model('Post', PostSchema);
