@@ -6,18 +6,18 @@ const PORT = process.env.PORT || 3000; // 4. Definir el puerto desde archivo .en
 
 const mongoose = require('mongoose'); // 5. Conecta con la BBDD
 
-//Conexión al Servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+// ... después de los middlewares de express
+app.use(express.json()); // ¡Súper importante para recibir datos del body!
 
 //Conexión a MongoDB
 mongoose.connect(process.env.URI)
   .then(()=> console.log("Conectado a BBDD"))
   .catch(err => console.error("Error al conectar a BBDD", err));
-
-// ... después de los middlewares de express
-app.use(express.json()); // ¡Súper importante para recibir datos del body!
+  
+//Conexión al Servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+});
 
 // Importar rutas
 const userRoutes = require('./routes/userRoutes');
