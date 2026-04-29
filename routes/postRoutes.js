@@ -6,5 +6,7 @@ const postController = require('../controllers/postController');
 router.delete('/delete/:id', postController.deletePost);
 // Ruta para votar un post
 router.post('/vote', postController.votePost);
-
+//Funciones faltantes del CRUD
+router.post('/', postController.createPost);
+router.get('/', postController.getAllPosts);
 module.exports = router;
