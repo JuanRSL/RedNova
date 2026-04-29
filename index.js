@@ -1,18 +1,6 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
-
-const app = express();
-
-// Conexión a MongoDB
-mongoose.connect(process.env.URI)
-  .then(() => console.log("¡Conexión exitosa a MongoDB Atlas!"))
-  .catch(err => console.error(" Error de conexión:", err));
-//
-const PORT = process.env.PORT || 3000;
-app.get('/', (req, res) => {
-  res.send('¡Servidor funcionando y conectado a MongoDB!');
-});
+const express = require('express'); // 1. Importar express
+const app = express();              // 2. Crear la instancia de la app
+const PORT = 3000;                  // 3. Definir el puerto
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
