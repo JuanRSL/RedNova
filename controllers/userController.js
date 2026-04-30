@@ -85,14 +85,40 @@ exports.getMyProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
             .select('-password')
-            .populate('followingUsers', 'username')
-            .populate('followingSubforums', 'name');
+            /*.populate('followingUsers', 'username')
+            .populate('followingSubforums', 'name')*/; //Se deja comentado mientras se crean los modelos para que no de error al hacer el getMyProfile
  
         if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
  
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el perfil', error: error.message });
+    }
+};
+
+// CONTROLADOR PARA ACTUALIZAR DATOS DE PERFIL
+exports.updateMyProfile = async (req, res) => {
+    try {
+        const userID = req.user.id;
+        const {email, currentPassword, newPassword} = req.body;
+        const user = await User.findById(userID);
+        
+        if (!user) return res.status(404).json({mesage: 'Usuario no encontado'});
+
+        //Validar la contraseña antes de guardar los cambios
+        if (newPassword || (email && email !== user.email)) {
+            const match = await bcrypt.compare(currentPassword, user.password);
+
+            if (!match) return res.status(401).json({mesage: 'Contraseña Incorrecta'})
+        }
+
+        if (email) user.email = email;
+        if (newPassword) user.password = await bcrypt.hash(newPassword, 10);
+
+        await user.save();
+        res.status(200).json({ message: 'Perfil actualizado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar el perfil', error: error.message});
     }
 };
  
