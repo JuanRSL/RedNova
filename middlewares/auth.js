@@ -1,6 +1,3 @@
-
-Copiar
-
 const jwt = require('jsonwebtoken');
  
 // MIDDLEWARE: Verifica que el token JWT sea válido
