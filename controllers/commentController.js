@@ -1,11 +1,13 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const User = require('../models/User');
 
 
 // CONTROLADOR PARA CREAR UN COMENTARIO
 exports.createComment = async (req, res) => {
     try {
-        const { content, authorId, postId } = req.body;
+        const { content, postId } = req.body;
+        const authorId = req.user.id;
         // Verificar que el post exista
         const post = await Post.findById(postId);
         if (!post) {
@@ -36,31 +38,29 @@ exports.getCommentsByPost = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener comentarios' });
     }
-
-    exports.deleteComment = async (req, res) => {
-        try {
-            const { commentId, userId } = req.body;
-            const comment = await Comment.findById(commentId);
-            const user = await User.findById(userId);
-
-            if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
-            if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
-
-            const isAuthor = comment.author.toString() === userId;
-            const isModerator = user.roles?.includes('moderator');
-            const isAdmin = user.roles?.includes('admin');
-
-            if (isAuthor || isModerator || isAdmin) {
-                await Comment.findByIdAndDelete(commentId);
-                return res.status(200).json({ message: 'Comentario eliminado exitosamente' });
-            } else {
-                return res.status(403).json({ message: 'No tienes permiso para eliminar este comentario' });
-            }
-        } catch (error) {
-            res.status(500).json({ message: 'Error al eliminar el comentario', error: error.message });
-        }
-    };
 };
 
-module.exports = { createComment, getCommentsByPost, deleteComment  
+exports.deleteComment = async (req, res) => {
+    try {
+        const { commentId } = req.body;
+        const userId = req.user.id;
+        const comment = await Comment.findById(commentId);
+        const user = await User.findById(userId);
+
+        if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
+        if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+        const isAuthor = comment.author.toString() === userId;
+        const isModerator = user.roles?.includes('moderator');
+        const isAdmin = user.roles?.includes('admin');
+
+        if (isAuthor || isModerator || isAdmin) {
+            await Comment.findByIdAndDelete(commentId);
+            return res.status(200).json({ message: 'Comentario eliminado exitosamente' });
+        } else {
+            return res.status(403).json({ message: 'No tienes permiso para eliminar este comentario' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el comentario', error: error.message });
+    }
 };

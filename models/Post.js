@@ -1,6 +1,6 @@
-const moongose = require('mongoose');
+const mongoose = require('mongoose');
 
-const PostSchema = new moongose.Schema({
+const PostSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -10,13 +10,13 @@ const PostSchema = new moongose.Schema({
         required: true,
     },
     author: {
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
     subforum: {
-        type: moongose.Schema.Types.ObjectId,
-        ref: 'subforum',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subforum',
         required: true,
     },
     createdAt: {
@@ -24,15 +24,15 @@ const PostSchema = new moongose.Schema({
         default: Date.now,
     },
     comments: [{
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
     }],
-    uptvotes: [{
-        type: moongose.Schema.Types.ObjectId,
+    upvotes: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
-    downtvotes: [{
-        type: moongose.Schema.Types.ObjectId,
+    downvotes: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
     score: {
@@ -41,4 +41,4 @@ const PostSchema = new moongose.Schema({
     },
 });
 
-module.exports = moongose.model('Post', PostSchema);
+module.exports = mongoose.model('Post', PostSchema);

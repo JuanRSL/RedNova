@@ -4,7 +4,8 @@ const User = require('../models/User');
 // --- CONTROLADOR PARA ELIMINAR UN POST ---
 exports.deletePost = async (req, res) => {
     try {
-        const { postId, userId } = req.body;
+        const postId = req.params.id;
+        const userId = req.user.id;
         
         const post = await Post.findById(postId);
         const user = await User.findById(userId);
@@ -31,7 +32,8 @@ exports.deletePost = async (req, res) => {
 // --- CONTROLADOR PARA VOTAR UN POST ---
 exports.votePost = async (req, res) => {
     try {
-        const { postId, userId, voteType } = req.body;
+        const { postId, voteType } = req.body;
+        const userId = req.user.id;
         const post = await Post.findById(postId);
 
         if (!post) {
@@ -63,6 +65,3 @@ exports.votePost = async (req, res) => {
         res.status(500).json({ message: 'Error al votar el post', error: error.message });
     }
 }; 
-
-
-module.exports = { deletePost, votePost };
