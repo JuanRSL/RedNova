@@ -34,8 +34,5 @@ const commentSchema = new mongoose.Schema({
     },
 });
 
-<<<<<<< HEAD
 module.exports = mongoose.model('Comment', commentSchema); 
-=======
 module.exports = mongoose.model('Comment', commentSchema);
->>>>>>> juanrodriguez

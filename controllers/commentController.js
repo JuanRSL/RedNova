@@ -40,14 +40,7 @@ exports.getCommentsByPost = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener comentarios' });
     }
 };
-exports.deleteComment = async (req, res) => {
-    try {
-        const { commentId, userId } = req.body;
-        const comment = await Comment.findById(commentId);
-        const user = await User.findById(userId);
 
-<<<<<<< HEAD
-=======
 exports.deleteComment = async (req, res) => {
     try {
         const { commentId } = req.body;
@@ -55,7 +48,6 @@ exports.deleteComment = async (req, res) => {
         const comment = await Comment.findById(commentId);
         const user = await User.findById(userId);
 
->>>>>>> juanrodriguez
         if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
         if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
@@ -73,3 +65,4 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el comentario', error: error.message });
     }
 };
+

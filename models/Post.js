@@ -4,7 +4,7 @@ const PostSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        trim: true // Opcional: elimina espacios innecesarios
+        trim: true
     },
     content: {
         type: String,

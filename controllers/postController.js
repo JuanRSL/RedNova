@@ -64,7 +64,6 @@ exports.votePost = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error al votar el post', error: error.message });
     }
-<<<<<<< HEAD
 }; 
 
 // CONTROLADOR PARA CREAR UN POST
@@ -88,6 +87,4 @@ exports.getAllPosts = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener posts' });
     }
 };
-=======
-}; 
->>>>>>> juanrodriguez
+; 
