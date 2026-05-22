@@ -1,10 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+<<<<<<< HEAD
 const {verifyToken} = require('../middlewares/auth');
+=======
+const auth = require('../middleware/auth');
+>>>>>>> juanrodriguez
 
 //REGISTRO: Crear un usuario nuevo
 router.post('/register', userController.registerUser);
+router.post('/login', userController.loginUser);
 
 //LOGIN: iniciar sesión usuario registrado
 router.post('/login', userController.loginUser);
@@ -16,9 +21,9 @@ router.get('/me', verifyToken , userController.getMyProfile);
 router.put('/me', verifyToken , userController.updateMyProfile);
 
 //SOCIAL: Seguir/Dejar de seguir a otra PERSONA
-router.post('/follow-user', userController.followUser);
+router.post('/follow-user', auth, userController.followUser);
 
 //COMUNIDAD: Seguir/Dejar de seguir un SUBFORO
-router.post('/follow-subforum', userController.followSubforum);
+router.post('/follow-subforum', auth, userController.followSubforum);
 
 module.exports = router;

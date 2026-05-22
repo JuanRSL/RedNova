@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const mongoose = require('mongoose'); // Corregido: 'mongoose' (antes moongose)
+=======
+const mongoose = require('mongoose');
+>>>>>>> juanrodriguez
 
 const PostSchema = new mongoose.Schema({
     title: {
@@ -17,7 +21,11 @@ const PostSchema = new mongoose.Schema({
     },
     subforum: {
         type: mongoose.Schema.Types.ObjectId,
+<<<<<<< HEAD
         ref: 'Subforum', // Sugerido: Capitalizar si el modelo se llama 'Subforum'
+=======
+        ref: 'Subforum',
+>>>>>>> juanrodriguez
         required: true,
     },
     createdAt: {
@@ -28,11 +36,19 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
     }],
+<<<<<<< HEAD
     upvotes: [{ // Corregido: 'upvotes' (antes uptvotes)
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
     downvotes: [{ // Corregido: 'downvotes' (antes downtvotes)
+=======
+    upvotes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    downvotes: [{
+>>>>>>> juanrodriguez
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
@@ -42,4 +58,8 @@ const PostSchema = new mongoose.Schema({
     },
 });
 
+<<<<<<< HEAD
 module.exports = mongoose.model('Post', PostSchema);
+=======
+module.exports = mongoose.model('Post', PostSchema);
+>>>>>>> juanrodriguez

@@ -1,11 +1,13 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const User = require('../models/User');
 
 
 // CONTROLADOR PARA CREAR UN COMENTARIO
 exports.createComment = async (req, res) => {
     try {
-        const { content, authorId, postId } = req.body;
+        const { content, postId } = req.body;
+        const authorId = req.user.id;
         // Verificar que el post exista
         const post = await Post.findById(postId);
         if (!post) {
@@ -44,6 +46,16 @@ exports.deleteComment = async (req, res) => {
         const comment = await Comment.findById(commentId);
         const user = await User.findById(userId);
 
+<<<<<<< HEAD
+=======
+exports.deleteComment = async (req, res) => {
+    try {
+        const { commentId } = req.body;
+        const userId = req.user.id;
+        const comment = await Comment.findById(commentId);
+        const user = await User.findById(userId);
+
+>>>>>>> juanrodriguez
         if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
         if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
