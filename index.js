@@ -23,9 +23,13 @@ app.listen(PORT, () => {
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const forumRoutes = require('./routes/forumRoutes');
+const subforumRoutes = require('./routes/subforumRoutes');
 
 // Usar rutas
 app.use('/api/usuarios', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comentarios', commentRoutes);
+app.use('/api/forums', forumRoutes);
+app.use('/api/subforums', subforumRoutes);
 

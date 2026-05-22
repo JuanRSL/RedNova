@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Subforum = require('../models/Subforum');
 
 // --- CONTROLADOR PARA ELIMINAR UN POST ---
 exports.deletePost = async (req, res) => {
@@ -69,8 +70,16 @@ exports.votePost = async (req, res) => {
 // CONTROLADOR PARA CREAR UN POST
 exports.createPost = async (req, res) => {
     try {
-        const { title, content, author, subforum } = req.body;
-        const newPost = new Post({ title, content, author, subforum });
+        const { title, content, author, subforum, forum } = req.body;
+        let forumId = forum;
+
+        // If forum not provided but subforum is, derive forum from subforum
+        if (!forumId && subforum) {
+            const sf = await Subforum.findById(subforum);
+            if (sf) forumId = sf.forum;
+        }
+
+        const newPost = new Post({ title, content, author, subforum, forum: forumId });
         await newPost.save();
         res.status(201).json({ message: 'Publicación creada', newPost });
     } catch (error) {
