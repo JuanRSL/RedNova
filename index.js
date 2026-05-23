@@ -11,9 +11,9 @@ app.use(express.json()); // ¡Súper importante para recibir datos del body!
 
 //Conexión a MongoDB
 mongoose.connect(process.env.URI)
-  .then(()=> console.log("Conectado a BBDD"))
+  .then(() => console.log("Conectado a BBDD"))
   .catch(err => console.error("Error al conectar a BBDD", err));
-  
+
 //Conexión al Servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
