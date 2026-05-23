@@ -15,6 +15,11 @@ const PostSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    forum: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Forum',
+        required: true,
+    },
     subforum: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subforum',
@@ -28,11 +33,11 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
     }],
-    upvotes: [{ // Corregido: 'upvotes' (antes uptvotes)
+    upvotes: [{ 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
-    downvotes: [{ // Corregido: 'downvotes' (antes downtvotes)
+    downvotes: [{ 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
