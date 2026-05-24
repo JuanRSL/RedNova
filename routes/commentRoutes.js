@@ -4,7 +4,7 @@ const commentController = require('../controllers/commentController');
 const { verifyToken } = require('../middlewares/auth');
 
 // Crear un comentario
-router.post('/comments', verifyToken, commentController.createComment);
+router.post('/', verifyToken, commentController.createComment);
 
 // Obtener todos los comentarios de un post específico
 router.get('/post/:postId', commentController.getCommentsByPost);

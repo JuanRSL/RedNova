@@ -70,8 +70,13 @@ exports.votePost = async (req, res) => {
 // CONTROLADOR PARA CREAR UN POST
 exports.createPost = async (req, res) => {
     try {
-        const { title, content, author, subforum, forum } = req.body;
+        const { title, content, subforum, forum } = req.body;
+        const author = req.user.id;
         let forumId = forum;
+
+        if (!title || !content || !subforum) {
+            return res.status(400).json({ message: 'title, content y subforum son requeridos' });
+        }
 
         // If forum not provided but subforum is, derive forum from subforum
         if (!forumId && subforum) {

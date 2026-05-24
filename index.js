@@ -1,35 +1,47 @@
 require('dotenv').config(); // 1. Lee la configuración del archivo .env (Importante antes de traer los datos del archivo)
 
-const express = require('express'); // 2. Importar express
-const app = express();              // 3. Crear la instancia de la app
-const PORT = process.env.PORT || 3000; // 4. Definir el puerto desde archivo .env                  
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const mongoose = require('mongoose'); // 5. Conecta con la BBDD
+const mongoose = require('mongoose');
 
-// ... después de los middlewares de express
-app.use(express.json()); // ¡Súper importante para recibir datos del body!
+app.use(express.json());
 
-//Conexión a MongoDB
-mongoose.connect(process.env.URI)
-  .then(() => console.log("Conectado a BBDD"))
-  .catch(err => console.error("Error al conectar a BBDD", err));
-
-//Conexión al Servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+// CORS: permite usar redNovaTest.html desde file:// o otro puerto
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
 });
 
-// Importar rutas
+// Importar rutas (antes de listen)
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const forumRoutes = require('./routes/forumRoutes');
 const subforumRoutes = require('./routes/subforumRoutes');
 
-// Usar rutas
 app.use('/api/usuarios', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comentarios', commentRoutes);
 app.use('/api/forums', forumRoutes);
 app.use('/api/subforums', subforumRoutes);
+
+// Tester en el mismo origen que la API (evita problemas de CORS)
+app.get('/test', (req, res) => {
+  res.sendFile(path.join(__dirname, 'redNovaTest.html'));
+});
+
+mongoose.connect(process.env.URI)
+  .then(() => console.log('Conectado a BBDD'))
+  .catch(err => console.error('Error al conectar a BBDD', err));
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Tester API: http://localhost:${PORT}/test`);
+});
 

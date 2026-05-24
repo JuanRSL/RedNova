@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RedNova API Tester</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141418;
+    --surface2: #1c1c22;
+    --border: #2a2a35;
+    --accent: #ff4d6d;
+    --accent2: #7c3aed;
+    --green: #22c55e;
+    --yellow: #facc15;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 56px 1fr;
+  }
+
+  /* HEADER */
+  header {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  header .logo span { color: var(--text); }
+
+  .base-url-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .base-url-wrap label { font-size: 11px; color: var(--muted); }
+
+  .base-url-wrap input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    width: 280px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .base-url-wrap input:focus { border-color: var(--accent); }
+
+  .token-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .token-badge.active { border-color: var(--green); color: var(--green); }
+
+  /* SIDEBAR */
+  nav {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+
+  .nav-section {
+    padding: 16px 16px 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background .15s;
+    font-size: 12px;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: var(--surface2); }
+  .nav-item.active { background: var(--surface2); border-left-color: var(--accent); color: #fff; }
+
+  .method-pill {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 36px;
+    text-align: center;
+  }
+  .GET { background: #064e3b; color: #6ee7b7; }
+  .POST { background: #1e1b4b; color: #a5b4fc; }
+  .PUT { background: #451a03; color: #fdba74; }
+  .DELETE { background: #450a0a; color: #fca5a5; }
+
+  /* MAIN */
+  main {
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+  }
+
+  .panel-header h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .endpoint-tag {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .panel-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  .field input, .field select, .field textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent2); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field select option { background: var(--surface2); }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: 0.5px;
+    align-self: flex-start;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #ff6b85; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--muted); }
+  .btn-green { background: #166534; color: #86efac; border: 1px solid #166534; }
+  .btn-green:hover { background: #15803d; }
+
+  .response-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    min-height: 60px;
+    font-size: 11px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 300px;
+    overflow-y: auto;
+    transition: border-color .3s;
+  }
+  .response-box.ok { border-color: var(--green); }
+  .response-box.err { border-color: var(--accent); }
+
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .status-chip.ok { background: #14532d; color: #86efac; }
+  .status-chip.err { background: #450a0a; color: #fca5a5; }
+  .status-chip.pending { background: var(--surface2); color: var(--muted); }
+
+  .resp-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .resp-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+
+  /* Token copy helper */
+  .token-helper {
+    background: #1a0a2e;
+    border: 1px solid var(--accent2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: #c4b5fd;
+    display: none;
+    word-break: break-all;
+  }
+  .token-helper.visible { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Placeholder state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .empty-state .big { font-size: 48px; }
+  .empty-state p { font-size: 13px; line-height: 1.7; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  /* fade-in for panels */
+  .panel { animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .nav-item .label { flex: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Red<span>Nova</span> <span style="color:var(--muted);font-size:13px;font-weight:400;">API Tester</span></div>
+  <div class="base-url-wrap">
+    <span style="font-size:10px;color:var(--yellow)">Abrí desde <a href="http://localhost:3000/test" style="color:var(--yellow)">localhost:3000/test</a></span>
+    <label>BASE URL</label>
+    <input type="text" id="baseUrl" value="http://localhost:3000/api" placeholder="http://localhost:3000/api">
+    <div class="token-badge" id="tokenBadge">Sin token</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-section">Auth / Usuarios</div>
+  <div class="nav-item active" onclick="show('register')"><span class="method-pill POST">POST</span><span class="label">Registrar usuario</span></div>
+  <div class="nav-item" onclick="show('login')"><span class="method-pill POST">POST</span><span class="label">Login</span></div>
+  <div class="nav-item" onclick="show('profile')"><span class="method-pill GET">GET</span><span class="label">Mi perfil</span></div>
+  <div class="nav-item" onclick="show('updateProfile')"><span class="method-pill PUT">PUT</span><span class="label">Editar perfil</span></div>
+  <div class="nav-item" onclick="show('followUser')"><span class="method-pill POST">POST</span><span class="label">Seguir usuario</span></div>
+  <div class="nav-item" onclick="show('followSubforum')"><span class="method-pill POST">POST</span><span class="label">Seguir subforo</span></div>
+
+  <div class="nav-section">Foros</div>
+  <div class="nav-item" onclick="show('createForum')"><span class="method-pill POST">POST</span><span class="label">Crear foro</span></div>
+  <div class="nav-item" onclick="show('getForums')"><span class="method-pill GET">GET</span><span class="label">Listar foros</span></div>
+  <div class="nav-item" onclick="show('getForumById')"><span class="method-pill GET">GET</span><span class="label">Obtener foro</span></div>
+  <div class="nav-item" onclick="show('deleteForum')"><span class="method-pill DELETE">DEL</span><span class="label">Eliminar foro</span></div>
+
+  <div class="nav-section">Subforos</div>
+  <div class="nav-item" onclick="show('createSubforum')"><span class="method-pill POST">POST</span><span class="label">Crear subforo</span></div>
+  <div class="nav-item" onclick="show('getSubforums')"><span class="method-pill GET">GET</span><span class="label">Listar subforos</span></div>
+  <div class="nav-item" onclick="show('getSubforumById')"><span class="method-pill GET">GET</span><span class="label">Obtener subforo</span></div>
+  <div class="nav-item" onclick="show('updateSubforum')"><span class="method-pill PUT">PUT</span><span class="label">Editar subforo</span></div>
+  <div class="nav-item" onclick="show('deleteSubforum')"><span class="method-pill DELETE">DEL</span><span class="label">Eliminar subforo</span></div>
+
+  <div class="nav-section">Posts</div>
+  <div class="nav-item" onclick="show('createPost')"><span class="method-pill POST">POST</span><span class="label">Crear post</span></div>
+  <div class="nav-item" onclick="show('getPosts')"><span class="method-pill GET">GET</span><span class="label">Listar posts</span></div>
+  <div class="nav-item" onclick="show('votePost')"><span class="method-pill POST">POST</span><span class="label">Votar post</span></div>
+  <div class="nav-item" onclick="show('deletePost')"><span class="method-pill DELETE">DEL</span><span class="label">Eliminar post</span></div>
+
+  <div class="nav-section">Comentarios</div>
+  <div class="nav-item" onclick="show('createComment')"><span class="method-pill POST">POST</span><span class="label">Crear comentario</span></div>
+  <div class="nav-item" onclick="show('getComments')"><span class="method-pill GET">GET</span><span class="label">Comentarios del post</span></div>
+  <div class="nav-item" onclick="show('deleteComment')"><span class="method-pill DELETE">DEL</span><span class="label">Eliminar comentario</span></div>
+</nav>
+
+<main id="mainArea">
+  <div class="empty-state">
+    <div class="big">🚀</div>
+    <p>Seleccioná un endpoint en el panel izquierdo<br>para empezar a probar la API.</p>
+  </div>
+</main>
+
+<script>
+const BASE = () => document.getElementById('baseUrl').value.replace(/\/$/, '');
+let TOKEN = '';
+
+function setToken(t) {
+  TOKEN = t;
+  const badge = document.getElementById('tokenBadge');
+  if (t) { badge.textContent = '✓ Token activo'; badge.className = 'token-badge active'; }
+  else { badge.textContent = 'Sin token'; badge.className = 'token-badge'; }
+}
+
+function headers(auth = false) {
+  const h = { 'Content-Type': 'application/json' };
+  if (auth && TOKEN) h['Authorization'] = `Bearer ${TOKEN}`;
+  return h;
+}
+
+async function call(method, url, body, respId, statusId, auth = false) {
+  const respEl = document.getElementById(respId);
+  const statusEl = document.getElementById(statusId);
+  respEl.textContent = 'Cargando...';
+  respEl.className = 'response-box';
+  statusEl.className = 'status-chip pending';
+  statusEl.textContent = '...';
+  try {
+    const opts = { method, headers: headers(auth) };
+    if (body && method !== 'GET') opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    const data = await res.json().catch(() => ({}));
+    const ok = res.ok;
+    respEl.textContent = JSON.stringify(data, null, 2);
+    respEl.className = 'response-box ' + (ok ? 'ok' : 'err');
+    statusEl.className = 'status-chip ' + (ok ? 'ok' : 'err');
+    statusEl.textContent = res.status + ' ' + res.statusText;
+    return { ok, data };
+  } catch (e) {
+    respEl.textContent = 'Error de red: ' + e.message + '\n\n1) Servidor: npm run dev\n2) MongoDB corriendo (URI en .env)\n3) Abrí http://localhost:3000/test\n4) BASE URL: http://localhost:3000/api';
+    respEl.className = 'response-box err';
+    statusEl.className = 'status-chip err';
+    statusEl.textContent = 'Network Error';
+    return { ok: false };
+  }
+}
+
+// ─── PANELS ─────────────────────────────────────────────────────────────────
+
+const panels = {
+
+  register: {
+    title: 'Registrar usuario',
+    method: 'POST',
+    endpoint: '/usuarios/register',
+    render: () => `
+      <div class="field-row">
+        <div class="field"><label>Username</label><input id="r_user" placeholder="juanrsl"></div>
+        <div class="field"><label>Email</label><input id="r_email" type="email" placeholder="juan@mail.com"></div>
+      </div>
+      <div class="field"><label>Password</label><input id="r_pass" type="password" placeholder="mínimo 6 caracteres"></div>
+      <button class="btn btn-primary" onclick="doRegister()">Registrar →</button>
+      <div id="reg_tokenHelper" class="token-helper"></div>`,
+    action: 'doRegister'
+  },
+
+  login: {
+    title: 'Login',
+    method: 'POST',
+    endpoint: '/usuarios/login',
+    render: () => `
+      <div class="field-row">
+        <div class="field"><label>Email</label><input id="l_email" type="email" placeholder="juan@mail.com"></div>
+        <div class="field"><label>Password</label><input id="l_pass" type="password" placeholder="tu contraseña"></div>
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Iniciar sesión →</button>
+      <div id="login_tokenHelper" class="token-helper"></div>`,
+  },
+
+  profile: {
+    title: 'Mi perfil',
+    method: 'GET',
+    endpoint: '/usuarios/me',
+    render: () => `
+      <p style="font-size:12px;color:var(--muted)">Requiere token activo (hacer login primero)</p>
+      <button class="btn btn-primary" onclick="doGetProfile()">Obtener perfil →</button>`,
+  },
+
+  updateProfile: {
+    title: 'Editar perfil',
+    method: 'PUT',
+    endpoint: '/usuarios/me',
+    render: () => `
+      <div class="field-row">
+        <div class="field"><label>Nuevo email</label><input id="up_email" placeholder="nuevo@mail.com"></div>
+        <div class="field"><label>Contraseña actual</label><input id="up_curpass" type="password"></div>
+      </div>
+      <div class="field"><label>Nueva contraseña (opcional)</label><input id="up_newpass" type="password"></div>
+      <button class="btn btn-primary" onclick="doUpdateProfile()">Guardar →</button>`,
+  },
+
+  followUser: {
+    title: 'Seguir / Dejar de seguir usuario',
+    method: 'POST',
+    endpoint: '/usuarios/follow-user',
+    render: () => `
+      <div class="field"><label>ID del usuario a seguir (targetId)</label><input id="fu_id" placeholder="ObjectId del usuario"></div>
+      <button class="btn btn-primary" onclick="doFollowUser()">Seguir / Unfollow →</button>`,
+  },
+
+  followSubforum: {
+    title: 'Seguir / Dejar de seguir subforo',
+    method: 'POST',
+    endpoint: '/usuarios/follow-subforum',
+    render: () => `
+      <div class="field"><label>ID del subforo (subredditId)</label><input id="fsub_id" placeholder="ObjectId del subforo"></div>
+      <button class="btn btn-primary" onclick="doFollowSubforum()">Unirse / Salir →</button>`,
+  },
+
+  createForum: {
+    title: 'Crear foro',
+    method: 'POST',
+    endpoint: '/forums',
+    render: () => `
+      <div class="field-row">
+        <div class="field"><label>Nombre</label><input id="cf_name" placeholder="Tecnología"></div>
+        <div class="field"><label>Slug</label><input id="cf_slug" placeholder="tecnologia"></div>
+      </div>
+      <div class="field"><label>Descripción</label><textarea id="cf_desc" placeholder="Foro sobre tech..."></textarea></div>
+      <div class="field"><label>¿Privado?</label><select id="cf_priv"><option value="false">No</option><option value="true">Sí</option></select></div>
+      <p style="font-size:11px;color:var(--yellow)">Requiere rol <strong>admin</strong> en tu usuario (MongoDB).</p>
+      <button class="btn btn-primary" onclick="doCreateForum()">Crear foro →</button>`,
+  },
+
+  getForums: {
+    title: 'Listar todos los foros',
+    method: 'GET',
+    endpoint: '/forums',
+    render: () => `
+      <button class="btn btn-primary" onclick="doGetForums()">Obtener foros →</button>`,
+  },
+
+  getForumById: {
+    title: 'Obtener foro por ID',
+    method: 'GET',
+    endpoint: '/forums/:id',
+    render: () => `
+      <div class="field"><label>Forum ID</label><input id="gf_id" placeholder="ObjectId del foro"></div>
+      <button class="btn btn-primary" onclick="doGetForumById()">Obtener →</button>`,
+  },
+
+  deleteForum: {
+    title: 'Eliminar foro',
+    method: 'DELETE',
+    endpoint: '/forums/:id',
+    render: () => `
+      <div class="field"><label>Forum ID</label><input id="df_id" placeholder="ObjectId del foro"></div>
+      <button class="btn btn-primary" onclick="doDeleteForum()">Eliminar →</button>`,
+  },
+
+  createSubforum: {
+    title: 'Crear subforo',
+    method: 'POST',
+    endpoint: '/subforums',
+    render: () => `
+      <div class="field-row">
+        <div class="field"><label>Nombre</label><input id="csf_name" placeholder="JavaScript"></div>
+        <div class="field"><label>Slug</label><input id="csf_slug" placeholder="javascript"></div>
+      </div>
+      <div class="field"><label>Forum ID (padre)</label><input id="csf_forum" placeholder="ObjectId del foro"></div>
+      <div class="field"><label>Descripción</label><textarea id="csf_desc" placeholder="Todo sobre JS..."></textarea></div>
+      <p style="font-size:11px;color:var(--yellow)">Requiere rol <strong>moderator</strong> o <strong>admin</strong>.</p>
+      <button class="btn btn-primary" onclick="doCreateSubforum()">Crear subforo →</button>`,
+  },
+
+  getSubforums: {
+    title: 'Listar subforos',
+    method: 'GET',
+    endpoint: '/subforums',
+    render: () => `
+      <div class="field"><label>Forum ID (opcional, filtra por foro)</label><input id="gsf_fid" placeholder="Dejar vacío para todos"></div>
+      <button class="btn btn-primary" onclick="doGetSubforums()">Obtener →</button>`,
+  },
+
+  getSubforumById: {
+    title: 'Obtener subforo por ID',
+    method: 'GET',
+    endpoint: '/subforums/:id',
+    render: () => `
+      <div class="field"><label>Subforum ID</label><input id="gsfid_id" placeholder="ObjectId"></div>
+      <button class="btn btn-primary" onclick="doGetSubforumById()">Obtener →</button>`,
+  },
+
+  updateSubforum: {
+    title: 'Editar subforo',
+    method: 'PUT',
+    endpoint: '/subforums/:id',
+    render: () => `
+      <div class="field"><label>Subforum ID</label><input id="usf_id" placeholder="ObjectId"></div>
+      <div class="field-row">
+        <div class="field"><label>Nuevo nombre</label><input id="usf_name" placeholder="Nuevo nombre"></div>
+        <div class="field"><label>Nueva descripción</label><input id="usf_desc" placeholder="Nueva descripción"></div>
+      </div>
+      <button class="btn btn-primary" onclick="doUpdateSubforum()">Actualizar →</button>`,
+  },
+
+  deleteSubforum: {
+    title: 'Eliminar subforo',
+    method: 'DELETE',
+    endpoint: '/subforums/:id',
+    render: () => `
+      <div class="field"><label>Subforum ID</label><input id="dsf_id" placeholder="ObjectId"></div>
+      <button class="btn btn-primary" onclick="doDeleteSubforum()">Eliminar →</button>`,
+  },
+
+  createPost: {
+    title: 'Crear post',
+    method: 'POST',
+    endpoint: '/posts',
+    render: () => `
+      <div class="field"><label>Título</label><input id="cp_title" placeholder="Título del post"></div>
+      <div class="field"><label>Contenido</label><textarea id="cp_content" placeholder="Contenido del post..."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Subforum ID</label><input id="cp_sub" placeholder="ObjectId"></div>
+        <div class="field"><label>Forum ID (opcional)</label><input id="cp_forum" placeholder="Se auto-detecta del subforo"></div>
+      </div>
+      <button class="btn btn-primary" onclick="doCreatePost()">Publicar →</button>`,
+  },
+
+  getPosts: {
+    title: 'Listar todos los posts',
+    method: 'GET',
+    endpoint: '/posts',
+    render: () => `
+      <button class="btn btn-primary" onclick="doGetPosts()">Obtener posts →</button>`,
+  },
+
+  votePost: {
+    title: 'Votar post',
+    method: 'POST',
+    endpoint: '/posts/vote',
+    render: () => `
+      <div class="field"><label>Post ID</label><input id="vp_id" placeholder="ObjectId del post"></div>
+      <div class="field"><label>Tipo de voto</label><select id="vp_type"><option value="up">👍 Upvote</option><option value="down">👎 Downvote</option></select></div>
+      <button class="btn btn-primary" onclick="doVotePost()">Votar →</button>`,
+  },
+
+  deletePost: {
+    title: 'Eliminar post',
+    method: 'DELETE',
+    endpoint: '/posts/delete/:id',
+    render: () => `
+      <div class="field"><label>Post ID</label><input id="dp_id" placeholder="ObjectId del post"></div>
+      <button class="btn btn-primary" onclick="doDeletePost()">Eliminar →</button>`,
+  },
+
+  createComment: {
+    title: 'Crear comentario',
+    method: 'POST',
+    endpoint: '/comentarios',
+    render: () => `
+      <div class="field"><label>Post ID</label><input id="cc_post" placeholder="ObjectId del post"></div>
+      <div class="field"><label>Contenido</label><textarea id="cc_content" placeholder="Tu comentario..."></textarea></div>
+      <button class="btn btn-primary" onclick="doCreateComment()">Comentar →</button>`,
+  },
+
+  getComments: {
+    title: 'Comentarios de un post',
+    method: 'GET',
+    endpoint: '/comentarios/post/:postId',
+    render: () => `
+      <div class="field"><label>Post ID</label><input id="gc_post" placeholder="ObjectId del post"></div>
+      <button class="btn btn-primary" onclick="doGetComments()">Obtener →</button>`,
+  },
+
+  deleteComment: {
+    title: 'Eliminar comentario',
+    method: 'DELETE',
+    endpoint: '/comentarios/delete',
+    render: () => `
+      <div class="field"><label>Comment ID</label><input id="dc_id" placeholder="ObjectId del comentario"></div>
+      <button class="btn btn-primary" onclick="doDeleteComment()">Eliminar →</button>`,
+  },
+};
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function activateNav(key) {
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+    const handler = el.getAttribute('onclick') || '';
+    if (handler.includes(`show('${key}')`)) el.classList.add('active');
+  });
+}
+
+function show(key) {
+  const p = panels[key];
+  if (!p) return;
+
+  activateNav(key);
+
+  const methodColor = { GET: '#6ee7b7', POST: '#a5b4fc', PUT: '#fdba74', DELETE: '#fca5a5' }[p.method] || '#fff';
+
+  document.getElementById('mainArea').innerHTML = `
+    <div class="panel">
+      <div class="panel-header">
+        <span class="method-pill ${p.method}">${p.method}</span>
+        <h2>${p.title}</h2>
+        <span class="endpoint-tag">${p.endpoint}</span>
+      </div>
+      <div class="panel-body">
+        ${p.render()}
+        <div class="divider"></div>
+        <div class="resp-header">
+          <span class="resp-label">Respuesta</span>
+          <span class="status-chip pending" id="resp_status">—</span>
+        </div>
+        <div class="response-box" id="resp_body">Ejecutá la petición para ver la respuesta aquí.</div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+
+async function doRegister() {
+  const r = await call('POST', `${BASE()}/usuarios/register`, {
+    username: v('r_user'), email: v('r_email'), password: v('r_pass')
+  }, 'resp_body', 'resp_status');
+  if (r.ok && r.data.token) {
+    setToken(r.data.token);
+    const h = document.getElementById('reg_tokenHelper');
+    if (h) { h.textContent = '✓ Token guardado automáticamente: ' + r.data.token.slice(0,40) + '...'; h.className = 'token-helper visible'; }
+  }
+}
+
+async function doLogin() {
+  const r = await call('POST', `${BASE()}/usuarios/login`, {
+    email: v('l_email'), password: v('l_pass')
+  }, 'resp_body', 'resp_status');
+  if (r.ok && r.data.token) {
+    setToken(r.data.token);
+    const h = document.getElementById('login_tokenHelper');
+    if (h) { h.textContent = '✓ Token guardado automáticamente: ' + r.data.token.slice(0,40) + '...'; h.className = 'token-helper visible'; }
+  }
+}
+
+async function doGetProfile() {
+  await call('GET', `${BASE()}/usuarios/me`, null, 'resp_body', 'resp_status', true);
+}
+
+async function doUpdateProfile() {
+  const body = {};
+  if (v('up_email')) body.email = v('up_email');
+  if (v('up_curpass')) body.currentPassword = v('up_curpass');
+  if (v('up_newpass')) body.newPassword = v('up_newpass');
+  await call('PUT', `${BASE()}/usuarios/me`, body, 'resp_body', 'resp_status', true);
+}
+
+async function doFollowUser() {
+  await call('POST', `${BASE()}/usuarios/follow-user`, { targetId: v('fu_id') }, 'resp_body', 'resp_status', true);
+}
+
+async function doFollowSubforum() {
+  await call('POST', `${BASE()}/usuarios/follow-subforum`, { subredditId: v('fsub_id') }, 'resp_body', 'resp_status', true);
+}
+
+async function doCreateForum() {
+  await call('POST', `${BASE()}/forums`, {
+    name: v('cf_name'), slug: v('cf_slug'),
+    description: v('cf_desc'), isPrivate: v('cf_priv') === 'true'
+  }, 'resp_body', 'resp_status', true);
+}
+
+async function doGetForums() {
+  await call('GET', `${BASE()}/forums`, null, 'resp_body', 'resp_status');
+}
+
+async function doGetForumById() {
+  await call('GET', `${BASE()}/forums/${v('gf_id')}`, null, 'resp_body', 'resp_status');
+}
+
+async function doDeleteForum() {
+  await call('DELETE', `${BASE()}/forums/${v('df_id')}`, null, 'resp_body', 'resp_status', true);
+}
+
+async function doCreateSubforum() {
+  await call('POST', `${BASE()}/subforums`, {
+    name: v('csf_name'), slug: v('csf_slug'),
+    forum: v('csf_forum'), description: v('csf_desc')
+  }, 'resp_body', 'resp_status', true);
+}
+
+async function doGetSubforums() {
+  const fid = v('gsf_fid');
+  const url = fid ? `${BASE()}/subforums?forumId=${fid}` : `${BASE()}/subforums`;
+  await call('GET', url, null, 'resp_body', 'resp_status');
+}
+
+async function doGetSubforumById() {
+  await call('GET', `${BASE()}/subforums/${v('gsfid_id')}`, null, 'resp_body', 'resp_status');
+}
+
+async function doUpdateSubforum() {
+  const body = {};
+  if (v('usf_name')) body.name = v('usf_name');
+  if (v('usf_desc')) body.description = v('usf_desc');
+  await call('PUT', `${BASE()}/subforums/${v('usf_id')}`, body, 'resp_body', 'resp_status', true);
+}
+
+async function doDeleteSubforum() {
+  await call('DELETE', `${BASE()}/subforums/${v('dsf_id')}`, null, 'resp_body', 'resp_status', true);
+}
+
+async function doCreatePost() {
+  const body = { title: v('cp_title'), content: v('cp_content'), subforum: v('cp_sub') };
+  if (v('cp_forum')) body.forum = v('cp_forum');
+  // author se inyecta desde req.user en el controller (si está bien implementado)
+  await call('POST', `${BASE()}/posts`, body, 'resp_body', 'resp_status', true);
+}
+
+async function doGetPosts() {
+  await call('GET', `${BASE()}/posts`, null, 'resp_body', 'resp_status');
+}
+
+async function doVotePost() {
+  await call('POST', `${BASE()}/posts/vote`, { postId: v('vp_id'), voteType: v('vp_type') }, 'resp_body', 'resp_status', true);
+}
+
+async function doDeletePost() {
+  await call('DELETE', `${BASE()}/posts/delete/${v('dp_id')}`, null, 'resp_body', 'resp_status', true);
+}
+
+async function doCreateComment() {
+  await call('POST', `${BASE()}/comentarios`, { postId: v('cc_post'), content: v('cc_content') }, 'resp_body', 'resp_status', true);
+}
+
+async function doGetComments() {
+  await call('GET', `${BASE()}/comentarios/post/${v('gc_post')}`, null, 'resp_body', 'resp_status');
+}
+
+async function doDeleteComment() {
+  await call('DELETE', `${BASE()}/comentarios/delete`, { commentId: v('dc_id') }, 'resp_body', 'resp_status', true);
+}
+
+// helper
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+// init
+show('register');
+</script>
+</body>
+</html>

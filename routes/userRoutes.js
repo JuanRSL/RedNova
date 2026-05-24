@@ -7,9 +7,6 @@ const { verifyToken } = require('../middlewares/auth');
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 
-//LOGIN: iniciar sesión usuario registrado
-router.post('/login', userController.loginUser);
-
 //PERFIL: Trae los datos del perfil del usuario
 router.get('/me', verifyToken , userController.getMyProfile);
 
