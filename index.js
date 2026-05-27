@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.URI || process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || process.env.URI || process.env.URI_mongodb;
 
 const mongoose = require('mongoose');
 
@@ -41,7 +41,7 @@ app.get('/test', (req, res) => {
 
 const startServer = async () => {
   if (!MONGO_URI) {
-    console.error('Falta la variable URI o MONGO_URI en el archivo .env');
+    console.error('Falta la variable MONGO_URI, URI o URI_mongodb en el archivo .env');
     process.exit(1);
   }
 

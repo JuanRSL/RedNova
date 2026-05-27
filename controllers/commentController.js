@@ -21,6 +21,9 @@ exports.createComment = async (req, res) => {
         });
         // Guardar el comentario
         await newComment.save();
+        post.comments = post.comments || [];
+        post.comments.push(newComment._id);
+        await post.save();
         res.status(201).json({ message: 'Comentario publicado', newComment });
     } catch (error) {
         res.status(500).json({ message: 'Error al comentar', error: error.message });
