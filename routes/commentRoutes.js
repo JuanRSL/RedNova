@@ -8,7 +8,7 @@ router.post('/', verifyToken, commentController.createComment);
 
 // Obtener todos los comentarios de un post específico
 router.get('/post/:postId', commentController.getCommentsByPost);
-
-router.delete('/delete', verifyToken, commentController.deleteComment);
+// Borrar un comentario )
+router.delete('/:commentId', verifyToken, commentController.deleteComment);
 
 module.exports = router;

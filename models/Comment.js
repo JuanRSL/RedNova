@@ -33,6 +33,6 @@ const commentSchema = new mongoose.Schema({
         default: null,
     },
 });
-
+// Exporta el modelo de comentario para usarlo en otros archivos
 module.exports = mongoose.model('Comment', commentSchema); 
-module.exports = mongoose.model('Comment', commentSchema);
+
