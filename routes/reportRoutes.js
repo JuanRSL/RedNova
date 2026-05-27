@@ -12,6 +12,6 @@ router.get('/', verifyToken, verifyModerator, reportController.getReports);
 
 // Route to mark a specific report as resolved (accessible only by moderators or admins)
 router.put('/:id/resolve', verifyToken, verifyModerator, reportController.resolveReport);
-// Route to delete a report (accessible only by admins)
-router.delete('/:id', verifyToken, verifyAdmin, reportController.deleteReport);
+// Route to delete a report (accessible only by moderators)
+router.delete('/:id', verifyToken, verifyModerator, reportController.deleteReport);
 module.exports = router;
