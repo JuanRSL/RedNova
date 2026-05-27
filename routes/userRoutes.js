@@ -14,9 +14,12 @@ router.get('/me', verifyToken , userController.getMyProfile);
 router.put('/me', verifyToken , userController.updateMyProfile);
 
 //SOCIAL: Seguir/Dejar de seguir a otra PERSONA
-router.post('/follow-user', verifyToken, userController.followUser);
+router.post('/users/:id/follow-user', verifyToken, userController.followUser);
 
 //COMUNIDAD: Seguir/Dejar de seguir un SUBFORO
-router.post('/follow-subforum', verifyToken, userController.followSubforum);
+router.post('/subforums/:id/follow-subforum', verifyToken, userController.followSubforum);
+
+//COMUNIDAD: Seguir/Dejar de seguir un FORO
+router.post('/forums/:id/follow-forum', verifyToken, userController.followForum);
 
 module.exports = router;
