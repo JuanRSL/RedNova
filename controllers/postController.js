@@ -84,8 +84,19 @@ exports.createPost = async (req, res) => {
             if (sf) forumId = sf.forum;
         }
 
+        if (!forumId) {
+            return res.status(400).json({ message: 'No se pudo asociar el post a un forum valido' });
+        }
+
         const newPost = new Post({ title, content, author, subforum, forum: forumId });
         await newPost.save();
+
+        const populatedPost = await Post.findById(newPost._id)
+            .populate('author', 'username')
+            .populate('forum', 'name slug description')
+            .populate('subforum', 'name slug description');
+
+        return res.status(201).json({ message: 'Publicacion creada', newPost: populatedPost });
         res.status(201).json({ message: 'Publicación creada', newPost });
     } catch (error) {
         res.status(400).json({ message: 'Error al crear post', error: error.message });
@@ -95,10 +106,27 @@ exports.createPost = async (req, res) => {
 // CONTROLADOR PARA OBTENER TODOS LOS POSTS
 exports.getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find().populate('author', 'username').sort({ createdAt: -1 });
+        const { forumId, subforumId, search } = req.query;
+        const filter = {};
+
+        if (forumId) filter.forum = forumId;
+        if (subforumId) filter.subforum = subforumId;
+        if (search) {
+            const term = new RegExp(search, 'i');
+            filter.$or = [
+                { title: term },
+                { content: term }
+            ];
+        }
+
+        const posts = await Post.find(filter)
+            .populate('author', 'username')
+            .populate('forum', 'name slug description')
+            .populate('subforum', 'name slug description')
+            .sort({ createdAt: -1 });
         res.json(posts);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener posts' });
+        res.status(500).json({ message: 'Error al obtener posts', error: error.message });
     }
 };
 ; 

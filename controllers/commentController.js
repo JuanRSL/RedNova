@@ -67,6 +67,7 @@ exports.createComment = async (req, res) => {
         });
 
         await newComment.save();
+<<<<<<< HEAD
 
         // Populate para devolver info útil
         await newComment.populate('author', 'username roles');
@@ -76,6 +77,12 @@ exports.createComment = async (req, res) => {
             comment: newComment
         });
 
+=======
+        post.comments = post.comments || [];
+        post.comments.push(newComment._id);
+        await post.save();
+        res.status(201).json({ message: 'Comentario publicado', newComment });
+>>>>>>> juanfinal
     } catch (error) {
         res.status(500).json({
             message: 'Error al crear el comentario',
