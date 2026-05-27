@@ -4,8 +4,8 @@ const router = express.Router();
 const subforumController = require('../controllers/subforumController');
 const { verifyToken, verifyModerator, verifyAdmin } = require('../middlewares/auth');
 
-// Create subforum (moderator/admin)
-router.post('/', verifyToken, verifyModerator, subforumController.createSubforum);
+// Create subforum (authenticated users can start communities)
+router.post('/', verifyToken, subforumController.createSubforum);
 
 // List subforums (optional ?forumId=...)
 router.get('/', subforumController.getSubforums);

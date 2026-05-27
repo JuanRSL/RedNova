@@ -4,8 +4,13 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+<<<<<<< HEAD
 const MONGO_URI = process.env.URI || process.env.MONGO_URI;
 // Importar mongoose para conectar a MongoDB
+=======
+const MONGO_URI = process.env.MONGO_URI || process.env.URI || process.env.URI_mongodb;
+
+>>>>>>> origin/juanfinal
 const mongoose = require('mongoose');
 // Middleware para parsear JSON
 app.use(express.json());
@@ -41,7 +46,7 @@ app.get('/test', (req, res) => {
 // Iniciar el servidor después de conectar a MongoDB
 const startServer = async () => {
   if (!MONGO_URI) {
-    console.error('Falta la variable URI o MONGO_URI en el archivo .env');
+    console.error('Falta la variable MONGO_URI, URI o URI_mongodb en el archivo .env');
     process.exit(1);
   }
 // Conectar a MongoDB y luego iniciar el servidor

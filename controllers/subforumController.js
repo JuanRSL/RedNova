@@ -13,7 +13,14 @@ exports.createSubforum = async (req, res) => {
         const existing = await Subforum.findOne({ $or: [{ name }, { slug }] });
         if (existing) return res.status(409).json({ message: 'Subforum con ese nombre o slug ya existe' });
 
-        const subforum = new Subforum({ name, slug, description, forum: forumId, isPrivate });
+        const subforum = new Subforum({
+            name,
+            slug,
+            description,
+            forum: forumId,
+            isPrivate,
+            moderators: req.user?.id ? [req.user.id] : []
+        });
         await subforum.save();
 
         // push to forum.subforums
