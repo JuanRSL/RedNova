@@ -203,7 +203,7 @@ exports.followForum = async (req, res) => {
         const forumId = req.params.id;
 
         if (!forumId || !isValidObjectId(forumId)) {
-            return res.status(400).json({ message: 'forumId inválido' });
+            return res.status(400).json({ message: 'forumId inválido o requerido' });
         }
 
         const user = await User.findById(userId);
@@ -213,7 +213,7 @@ exports.followForum = async (req, res) => {
         if (!forum) return res.status(404).json({ message: 'Forum no encontrado' });
 
         const isFollowing = await toggleFollow({ user, targetId: forumId, followField: 'followingForums' });
-        res.status(200).json({ message: isFollowing ? 'Has dejado de seguir el foro' : 'Ahora sigues este foro' });
+        res.status(200).json({ message: isFollowing ? 'Dejaste de seguir el foro' : 'Siguiendo el foro ahora' });
     } catch (error) {
         res.status(500).json({ message: 'Error al procesar la suscripción al foro', error: error.message });
     }

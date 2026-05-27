@@ -7,6 +7,7 @@ exports.createReport = async (req, res) => {
     try {
         const { contentId, contentType, reason } = req.body;
         const reportedBy = req.user.id;
+        
         // Validar campos requeridos
         if (!contentId || !contentType || !reason) {
             return res.status(400).json({ message: 'contentId, contentType y reason son requeridos' });
@@ -69,16 +70,18 @@ exports.resolveReport = async (req, res) => {
     }
 };
 
-// Delete report (Moderator/Admin)
+// Eliminar un reporte por su ID (Moderator/Admin)
 exports.deleteReport = async (req, res) => {
     try {
         const { id } = req.params;
         const report = await Report.findByIdAndDelete(id);
 
-        if (!report) return res.status(404).json({ message: 'Reporte no encontrado' });
+        if (!report) {
+            return res.status(404).json({ message: 'Reporte no encontrado' });
+        }
 
-        res.status(200).json({ message: 'Reporte eliminado correctamente' });
+        res.status(200).json({ message: 'Reporte eliminado exitosamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar reporte', error: error.message });
+        res.status(500).json({ message: 'Error al eliminar el reporte', error: error.message });
     }
 };
