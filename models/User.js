@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     followingUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     followingSubforums: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subforum' }],
+    followingForums: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Forum' }],
     moderatedSubforums: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subforum' }],
     moderatedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     moderatedComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
