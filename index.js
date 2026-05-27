@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.URI || process.env.MONGO_URI;
 
 const mongoose = require('mongoose');
 
@@ -38,11 +39,24 @@ app.get('/test', (req, res) => {
   res.sendFile(path.join(__dirname, 'redNovaTest.html'));
 });
 
-mongoose.connect(process.env.URI)
-  .then(() => console.log('Conectado a BBDD'))
-  .catch(err => console.error('Error al conectar a BBDD', err));
+const startServer = async () => {
+  if (!MONGO_URI) {
+    console.error('Falta la variable URI o MONGO_URI en el archivo .env');
+    process.exit(1);
+  }
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`Tester API: http://localhost:${PORT}/test`);
-});
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log('Conectado a BBDD');
+
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`Tester API: http://localhost:${PORT}/test`);
+    });
+  } catch (err) {
+    console.error('Error al conectar a BBDD', err.message || err);
+    process.exit(1);
+  }
+};
+
+startServer();

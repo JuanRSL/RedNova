@@ -94,7 +94,7 @@ exports.updateMyProfile = async (req, res) => {
 exports.followUser = async (req, res) => {
     try {
         const myId = req.user.id;
-        const { targetId } = req.body;
+        const targetId = req.params.id;
         if (!targetId) return res.status(400).json({ message: 'targetId es requerido' });
         if (myId === targetId) return res.status(400).json({ message: 'No puedes seguirte a ti mismo' });
 
@@ -118,7 +118,7 @@ exports.followUser = async (req, res) => {
 exports.followSubforum = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { subredditId } = req.body;
+        const subredditId = req.params.id;
         if (!subredditId) return res.status(400).json({ message: 'subredditId es requerido' });
 
         const user = await User.findById(userId);
@@ -131,5 +131,25 @@ exports.followSubforum = async (req, res) => {
         res.status(200).json({ message: isFollowing ? 'Has salido del subforo' : 'Te has unido al subforo' });
     } catch (error) {
         res.status(500).json({ message: 'Error al procesar la suscripción al subforo', error: error.message });
+    }
+};
+
+// Follow / Unfollow a forum
+exports.followForum = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const forumId = req.params.id;
+        if (!forumId) return res.status(400).json({ message: 'forumId es requerido' });
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+        const isFollowing = (user.followingForums || []).map(String).includes(String(forumId));
+        const action = isFollowing ? '$pull' : '$addToSet';
+
+        await User.findByIdAndUpdate(userId, { [action]: { followingForums: forumId } });
+        res.status(200).json({ message: isFollowing ? 'Has dejado de seguir el foro' : 'Ahora sigues este foro' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al procesar la suscripción al foro', error: error.message });
     }
 };

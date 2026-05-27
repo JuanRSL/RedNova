@@ -68,3 +68,17 @@ exports.resolveReport = async (req, res) => {
         res.status(500).json({ message: 'Error al actualizar reporte', error: error.message });
     }
 };
+
+// Delete report (Moderator/Admin)
+exports.deleteReport = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const report = await Report.findByIdAndDelete(id);
+
+        if (!report) return res.status(404).json({ message: 'Reporte no encontrado' });
+
+        res.status(200).json({ message: 'Reporte eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar reporte', error: error.message });
+    }
+};
