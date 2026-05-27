@@ -24,12 +24,14 @@ const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const forumRoutes = require('./routes/forumRoutes');
 const subforumRoutes = require('./routes/subforumRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 app.use('/api/usuarios', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comentarios', commentRoutes);
 app.use('/api/forums', forumRoutes);
 app.use('/api/subforums', subforumRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Tester en el mismo origen que la API (evita problemas de CORS)
 app.get('/test', (req, res) => {
@@ -44,4 +46,3 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
   console.log(`Tester API: http://localhost:${PORT}/test`);
 });
-
