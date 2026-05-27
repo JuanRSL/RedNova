@@ -4,13 +4,8 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-<<<<<<< HEAD
 const MONGO_URI = process.env.URI || process.env.MONGO_URI;
 // Importar mongoose para conectar a MongoDB
-=======
-const MONGO_URI = process.env.MONGO_URI || process.env.URI || process.env.URI_mongodb;
-
->>>>>>> origin/juanfinal
 const mongoose = require('mongoose');
 // Middleware para parsear JSON
 app.use(express.json());
