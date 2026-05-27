@@ -7,7 +7,7 @@ exports.createReport = async (req, res) => {
     try {
         const { contentId, contentType, reason } = req.body;
         const reportedBy = req.user.id;
-// Validar campos requeridos
+        // Validar campos requeridos
         if (!contentId || !contentType || !reason) {
             return res.status(400).json({ message: 'contentId, contentType y reason son requeridos' });
         }
@@ -56,8 +56,8 @@ exports.resolveReport = async (req, res) => {
     try {
         const { id } = req.params;
         const report = await Report.findByIdAndUpdate(
-            id, 
-            { resolved: true }, 
+            id,
+            { resolved: true },
             { new: true }
         );
 
