@@ -46,9 +46,9 @@ exports.votePost = async (req, res) => {
         post.downvotes = post.downvotes.filter(id => id.toString() !== userId);
 
         // Agregar el nuevo voto
-        if (voteType === 'up') {
+        if (voteType === 'upvote') {
             post.upvotes.push(userId);
-        } else if (voteType === 'down') {
+        } else if (voteType === 'downvote') {
             post.downvotes.push(userId);
         }
 
@@ -129,4 +129,20 @@ exports.getAllPosts = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener posts', error: error.message });
     }
 };
-; 
+
+// CONTROLADOR PARA OBTENER UN POST POR ID
+exports.getPostById = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findById(postId)
+            .populate('author', 'username')
+            .populate('forum', 'name slug description')
+            .populate('subforum', 'name slug description');
+        if (!post) {
+            return res.status(404).json({ message: 'Post no encontrado' });
+        }
+        res.json(post);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el post', error: error.message });
+    }
+};
