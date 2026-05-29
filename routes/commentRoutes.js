@@ -10,5 +10,9 @@ router.post('/', verifyToken, commentController.createComment);
 router.get('/post/:postId', commentController.getCommentsByPost);
 // Borrar un comentario )
 router.delete('/:commentId', verifyToken, commentController.deleteComment);
+// Votar un comentario
+router.post('/:commentId/vote', verifyToken, commentController.voteComment);
+// Responder a un comentario (crear un comentario hijo)
+router.post('/:commentId/reply', verifyToken, commentController.replyToComment);
 
 module.exports = router;
