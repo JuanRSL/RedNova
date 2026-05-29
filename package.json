@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "seed": "node scripts/seedDemoData.js",
     "check-users": "node scripts/check-users.js",
-    "check-subforums": "node scripts/check-subforums.js"
+    "check-subforums": "node scripts/check-subforums.js",
+    "check-forums": "node scripts/check-forums.js"
   },
   "keywords": [],
   "author": "",

@@ -12,7 +12,6 @@ RedNova es una API REST construida con Node.js, Express y MongoDB para manejar u
 - Crear, listar y eliminar comentarios
 - Crear foros y subforos (roles moderador/admin)
 - Sistema de reportes para moderadores
-- CORS habilitado y archivo de prueba `redNovaTest.html`
 
 ## 🚀 Tecnologías
 
@@ -174,6 +173,7 @@ Abre `http://localhost:3000/test` después de iniciar el servidor para visualiza
 - `npm run seed` → ejecuta `scripts/seedDemoData.js`
 - `npm run check-users` → verifica los usuarios en la base de datos
 - `npm run check-subforums` → verifica los subforos y su relación con foros
+- `npm run check-forums` → verifica los foros principales en la base de datos
 
 ## 👥 Equipo
 

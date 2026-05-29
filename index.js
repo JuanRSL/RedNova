@@ -1,7 +1,6 @@
 require('dotenv').config(); // 1. Lee la configuración del archivo .env (Importante antes de traer los datos del archivo)
 // index.js - Punto de entrada principal para la API de RedNova
 const express = require('express');
-const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.URI || process.env.MONGO_URI;
@@ -10,7 +9,7 @@ const mongoose = require('mongoose');
 // Middleware para parsear JSON
 app.use(express.json());
 
-// CORS: permite usar redNovaTest.html desde file:// o otro puerto
+// CORS: permite el acceso desde otros orígenes
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -34,10 +33,6 @@ app.use('/api/forums', forumRoutes);
 app.use('/api/subforums', subforumRoutes);
 app.use('/api/reports', reportRoutes);
 
-// Tester en el mismo origen que la API (evita problemas de CORS)
-app.get('/test', (req, res) => {
-  res.sendFile(path.join(__dirname, 'redNovaTest.html'));
-});
 // Iniciar el servidor después de conectar a MongoDB
 const startServer = async () => {
   if (!MONGO_URI) {
@@ -51,7 +46,6 @@ const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`Tester API: http://localhost:${PORT}/test`);
     });
   } catch (err) {
     console.error('Error al conectar a BBDD', err.message || err);
