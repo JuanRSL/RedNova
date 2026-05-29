@@ -172,6 +172,8 @@ Abre `http://localhost:3000/test` después de iniciar el servidor para visualiza
 - `npm start` → inicia el servidor
 - `npm run dev` → inicia con `nodemon`
 - `npm run seed` → ejecuta `scripts/seedDemoData.js`
+- `npm run check-users` → verifica los usuarios en la base de datos
+- `npm run check-subforums` → verifica los subforos y su relación con foros
 
 ## 👥 Equipo
 

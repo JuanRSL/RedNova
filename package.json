@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node scripts/seedDemoData.js",
-    "check-users": "node scripts/check-users.js"
+    "check-users": "node scripts/check-users.js",
+    "check-subforums": "node scripts/check-subforums.js"
   },
   "keywords": [],
   "author": "",
