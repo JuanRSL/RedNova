@@ -15,4 +15,7 @@ router.post('/:id/vote', verifyToken, postController.votePost);
 // DELETE post
 router.delete('/:id', verifyToken, postController.deletePost);
 
+// GET SINGLE POST BY ID
+router.get('/:id', postController.getPostById);
+
 module.exports = router;
